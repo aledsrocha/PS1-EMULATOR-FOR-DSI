@@ -54,7 +54,7 @@ O PS1_DSI é livre e gratuito, e vai continuar assim. Se você gosta do projeto
 e quer ajudar no desenvolvimento (tempo de trabalho e hardware de teste),
 considere uma doação:
 
-[![Doar com PayPal](https://img.shields.io/badge/PayPal-Doar-00457C?logo=paypal&logoColor=white)](https://www.paypal.com/donate/?business=ZUFZ9T4PD792W&no_recurring=0&currency_code=BRL)
+[![Doar com PayPal](https://img.shields.io/badge/PayPal-Doar-00457C?logo=paypal&logoColor=white)](https://www.paypal.com/donate/?business=ZUFZ9T4PD792W&no_recurring=0&currency_code=USD)
 
 Obrigado a todos que apoiam!
 
@@ -73,4 +73,4 @@ Licença: **GNU GPL v3 ou posterior** — veja [COPYING](COPYING) e [CREDITOS.tx
 **English:** experimental PlayStation emulator for the Nintendo DSi (native ARM9,
 no add-on hardware). Boots commercial games (e.g. *Marvel vs. Capcom*) at ~6%
 speed; a MIPS→ARM dynarec is next. GPL v3+. No BIOS or games included.
-Donations: [PayPal](https://www.paypal.com/donate/?business=ZUFZ9T4PD792W&no_recurring=0&currency_code=BRL).
+Donations: [PayPal](https://www.paypal.com/donate/?business=ZUFZ9T4PD792W&no_recurring=0&currency_code=USD).
