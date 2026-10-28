@@ -1,0 +1,77 @@
+ETAPA 5b - BIOS destravada + boot de CD validado
+================================================
+
+O que mudou
+-----------
+1. cpu.c: CPI = 2 (ciclos por instrucao). Era 1, o que fazia a BIOS achar
+   a CPU 2x mais rapida: o VSync() estourava o tempo ("VSync: timeout") e
+   cada quadro exigia o dobro de instrucoes. Com 2: zero timeouts e o
+   dobro de tempo emulado por instrucao executada.
+
+2. gpu.c: rasterizador de triangulos reescrito. Antes varria o retangulo
+   inteiro em volta do triangulo (metade vazio) testando cada pixel; agora
+   calcula o trecho de cada linha e tem versoes especializadas por tipo de
+   poligono. 6x mais rapido, resultado identico bit a bit (testado na VRAM).
+
+3. gpu.c: frameskip (padrao 1). Decide na troca de buffer (GP1(05)), como o
+   PCSX-ReARMed; jogos que desenham direto no buffer visivel (menu da BIOS)
+   nunca sao pulados.
+
+4. main.c: seletor de disco novo
+   - navega pastas (A abre, B volta), comeca em /games, /psx/games, /psx ou /
+   - avisa quando a pasta nao tem .cue/.bin/.iso (antes sumia calado)
+   - SELECT: pular/mostrar a intro da BIOS (padrao: pular)
+   - L/R: frameskip 0..5
+
+5. Fast boot: com disco, o shell da BIOS e pulado (jr ra em 0x80030000).
+   O jogo comeca em ~6 milhoes de instrucoes em vez de ~166 milhoes.
+
+Validado no PC (pasta pc_test)
+------------------------------
+- BIOS sem disco chega ao menu (MEMORY CARD / CD PLAYER), sem VSync timeout.
+- Disco de teste (ISO 2048 e BIN/CUE 2352): a BIOS le o SYSTEM.CNF, carrega
+  o EXE do CD e executa. Ou seja, o caminho de boot de CD funciona.
+- O .nds NAO foi recompilado aqui (sem devkitARM): rode "make".
+
+pc_test/
+--------
+Harness que roda o mesmo nucleo no PC e salva a tela em imagem.
+  cd pc_test && ./build.sh && ./psx_pc 60 "/caminho/jogo.cue" fast
+mkdisc.py gera um disco de teste minimo.
+
+Atualizacao (log de diagnostico)
+--------------------------------
+- O emulador grava /psx_log.txt na raiz do SD: tudo que a BIOS/jogo escreve
+  no console, cada comando de CD, falhas de leitura, instrucoes invalidas e
+  uso do GTE. Status a cada 10 s.
+- Makefile: so embute arquivos .bin da pasta data/.
+
+ETAPA 4 - GTE (portado do pcsx4all)
+-----------------------------------
+- source/gte.c: todas as 22 operacoes do GTE + registradores (MFC2, CFC2,
+  MTC2, CTC2, LWC2, SWC2). Codigo das operacoes igual ao do pcsx4all.
+- Divisor: algoritmo UNR do psx-spx (tabela de 257 bytes no lugar da tabela
+  de 64 KB). Conferido contra a tabela original: 460 milhoes de casos, 0
+  diferencas.
+- Validacao: 3 milhoes de operacoes aleatorias no gte.c e no gte.cpp original
+  do pcsx4all, comparando os 64 registradores a cada passo: 0 diferencas.
+- O projeto agora e GPL v3+ (COPYING, CREDITOS.txt).
+
+Memoria no modo DS (4 MB)
+-------------------------
+- A BIOS nao e mais embutida no .nds (Makefile: DATA vazio). Ela e lida do
+  cartao: /psx/scph1001.bin ou /scph1001.bin.
+- Modo DS: a BIOS vai para a memoria de video livre do DS (bancos B..H,
+  512 KB). O texto da tela de baixo passou para o banco I.
+- Modo DSi: a BIOS vai para a RAM principal (16 MB, sobra muito).
+- Mesmo assim o modo DS fica no limite. Quando entrar o audio (SPU, mais
+  512 KB) ele nao vai caber: o alvo real e o modo DSi.
+
+Correcao do CD (Marvel vs. Capcom saltava para " EXE")
+-----------------------------------------------------
+- Pedido de dados (bit 7 do registrador 3): o setor so e carregado no FIFO
+  na primeira vez, como no pcsx4all. Antes cada pedido voltava ao inicio do
+  setor; quem lia o cabecalho e depois os dados recebia tudo deslocado.
+- DMA do CD com tamanho 0 = um setor (antes: 64K palavras de zeros na RAM).
+- DMA do CD maior que o setor: copia so o que existe (antes: zeros).
+- Teste: pc_test/cdtest.c (cabecalho + pedido repetido + dados).

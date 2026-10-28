@@ -1,0 +1,20 @@
+PS1_DSI - emulador de PlayStation para Nintendo DSi
+====================================================
+
+Licenca: GNU GPL versao 3 ou posterior (arquivo COPYING). O codigo vindo do
+pcsx4all e "GPL v2 ou posterior", compativel com a v3.
+Quem distribuir o .nds deve disponibilizar tambem o codigo-fonte.
+
+Codigo de terceiros
+-------------------
+- source/gte.c: GTE (coprocessador de geometria) portado do pcsx4all
+  (https://github.com/dmitrysmagin/pcsx4all, src/gte.cpp), que por sua vez
+  vem do PCSX / PCSX-Revolution / PCSX-ReARMed. Copyright dos autores
+  originais (Ryan Schultz, PCSX-df Team, PCSX team, PCSX-Revolution Dev Team,
+  senquack e outros), GPL v2+.
+
+Referencias
+-----------
+- psx-spx (Martin Korth / nocash): documentacao do hardware do PS1.
+  O divisor UNR do GTE segue o algoritmo descrito la.
+- libnds / libfat (devkitPro).
